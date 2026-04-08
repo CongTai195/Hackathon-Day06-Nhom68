@@ -1,0 +1,255 @@
+[
+  {
+    "id": "vf-3",
+    "model": "VF 3",
+    "name": "VinFast VF 3",
+    "segment": "Mini-SUV",
+    "capacity": 4,
+    "battery": {
+      "capacity_kwh": 18.64,
+      "range_km": 210,
+      "fast_charge_time_mins": 36
+    },
+    "performance": {
+      "max_power_kw": 32,
+      "max_torque_nm": 110,
+      "acceleration_0_50_secs": 5.3
+    },
+    "pricing": {
+      "base_price_vnd": 240000000,
+      "battery_included_price_vnd": 315000000
+    },
+    "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+3&font=Montserrat",
+    "status": "Available"
+  },
+  {
+    "id": "vf-5-plus",
+    "model": "VF 5",
+    "name": "VinFast VF 5 Plus",
+    "segment": "A-SUV",
+    "capacity": 5,
+    "battery": {
+      "capacity_kwh": 37.23,
+      "range_km": 326.4,
+      "fast_charge_time_mins": 30
+    },
+    "performance": {
+      "max_power_kw": 100,
+      "max_torque_nm": 135,
+      "acceleration_0_100_secs": 10.9
+    },
+    "pricing": {
+      "base_price_vnd": 468000000,
+      "battery_included_price_vnd": 548000000
+    },
+    "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+5+Plus&font=Montserrat",
+    "status": "Available"
+  },
+  {
+    "id": "vf-e34",
+    "model": "VF e34",
+    "name": "VinFast VF e34",
+    "segment": "C-SUV",
+    "capacity": 5,
+    "battery": {
+      "capacity_kwh": 41.9,
+      "range_km": 318.6,
+      "fast_charge_time_mins": 27
+    },
+    "performance": {
+      "max_power_kw": 110,
+      "max_torque_nm": 242,
+      "acceleration_0_100_secs": 9.0
+    },
+    "pricing": {
+      "base_price_vnd": 710000000,
+      "battery_included_price_vnd": 830000000
+    },
+    "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+e34&font=Montserrat",
+    "status": "Available"
+  },
+  {
+    "id": "vf-6-eco",
+    "model": "VF 6",
+    "name": "VinFast VF 6 Eco",
+    "segment": "B-SUV",
+    "capacity": 5,
+    "battery": {
+      "capacity_kwh": 59.6,
+      "range_km": 399,
+      "fast_charge_time_mins": 26
+    },
+    "performance": {
+      "max_power_kw": 100,
+      "max_torque_nm": 135,
+      "acceleration_0_100_secs": 10.0
+    },
+    "pricing": {
+      "base_price_vnd": 675000000,
+      "battery_included_price_vnd": 765000000
+    },
+    "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+6+Eco&font=Montserrat",
+    "status": "Available"
+  },
+  {
+    "id": "vf-6-plus",
+    "model": "VF 6",
+    "name": "VinFast VF 6 Plus",
+    "segment": "B-SUV",
+    "capacity": 5,
+    "battery": {
+      "capacity_kwh": 59.6,
+      "range_km": 381,
+      "fast_charge_time_mins": 26
+    },
+    "performance": {
+      "max_power_kw": 150,
+      "max_torque_nm": 310,
+      "acceleration_0_100_secs": 8.5
+    },
+    "pricing": {
+      "base_price_vnd": 765000000,
+      "battery_included_price_vnd": 855000000
+    },
+    "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+6+Plus&font=Montserrat",
+    "status": "Available"
+  },
+  {
+    "id": "vf-7-base",
+    "model": "VF 7",
+    "name": "VinFast VF 7 Base",
+    "segment": "C-SUV",
+    "capacity": 5,
+    "battery": {
+      "capacity_kwh": 59.6,
+      "range_km": 375,
+      "fast_charge_time_mins": 28
+    },
+    "performance": {
+      "max_power_kw": 130,
+      "max_torque_nm": 250,
+      "acceleration_0_100_secs": 10.0
+    },
+    "pricing": {
+      "base_price_vnd": 850000000,
+      "battery_included_price_vnd": 999000000
+    },
+    "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+7+Base&font=Montserrat",
+    "status": "Available"
+  },
+  {
+    "id": "vf-7-plus",
+    "model": "VF 7",
+    "name": "VinFast VF 7 Plus",
+    "segment": "C-SUV",
+    "capacity": 5,
+    "battery": {
+      "capacity_kwh": 75.3,
+      "range_km": 431,
+      "fast_charge_time_mins": 28
+    },
+    "performance": {
+      "max_power_kw": 260,
+      "max_torque_nm": 500,
+      "acceleration_0_100_secs": 5.8
+    },
+    "pricing": {
+      "base_price_vnd": 999000000,
+      "battery_included_price_vnd": 1199000000
+    },
+    "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+7+Plus&font=Montserrat",
+    "status": "Available"
+  },
+  {
+    "id": "vf-8-eco",
+    "model": "VF 8",
+    "name": "VinFast VF 8 Eco",
+    "segment": "D-SUV",
+    "capacity": 5,
+    "battery": {
+      "capacity_kwh": 87.7,
+      "range_km": 471,
+      "fast_charge_time_mins": 31
+    },
+    "performance": {
+      "max_power_kw": 260,
+      "max_torque_nm": 500,
+      "acceleration_0_100_secs": 6.5
+    },
+    "pricing": {
+      "base_price_vnd": 1090000000,
+      "battery_included_price_vnd": 1290000000
+    },
+    "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+8+Eco&font=Montserrat",
+    "status": "Available"
+  },
+  {
+    "id": "vf-8-plus",
+    "model": "VF 8",
+    "name": "VinFast VF 8 Plus",
+    "segment": "D-SUV",
+    "capacity": 5,
+    "battery": {
+      "capacity_kwh": 87.7,
+      "range_km": 400,
+      "fast_charge_time_mins": 31
+    },
+    "performance": {
+      "max_power_kw": 300,
+      "max_torque_nm": 620,
+      "acceleration_0_100_secs": 5.5
+    },
+    "pricing": {
+      "base_price_vnd": 1270000000,
+      "battery_included_price_vnd": 1470000000
+    },
+    "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+8+Plus&font=Montserrat",
+    "status": "Available"
+  },
+  {
+    "id": "vf-9-eco",
+    "model": "VF 9",
+    "name": "VinFast VF 9 Eco",
+    "segment": "E-SUV",
+    "capacity": 6,
+    "battery": {
+      "capacity_kwh": 123.0,
+      "range_km": 626,
+      "fast_charge_time_mins": 35
+    },
+    "performance": {
+      "max_power_kw": 300,
+      "max_torque_nm": 620,
+      "acceleration_0_100_secs": 6.5
+    },
+    "pricing": {
+      "base_price_vnd": 1491000000,
+      "battery_included_price_vnd": 1984000000
+    },
+    "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+9+Eco&font=Montserrat",
+    "status": "Available"
+  },
+  {
+    "id": "vf-9-plus",
+    "model": "VF 9",
+    "name": "VinFast VF 9 Plus",
+    "segment": "E-SUV",
+    "capacity": 6,
+    "battery": {
+      "capacity_kwh": 123.0,
+      "range_km": 423,
+      "fast_charge_time_mins": 35
+    },
+    "performance": {
+      "max_power_kw": 300,
+      "max_torque_nm": 620,
+      "acceleration_0_100_secs": 6.5
+    },
+    "pricing": {
+      "base_price_vnd": 1676000000,
+      "battery_included_price_vnd": 2169000000
+    },
+    "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+9+Plus&font=Montserrat",
+    "status": "Available"
+  }
+]

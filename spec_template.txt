@@ -1,0 +1,29 @@
+# SPEC draft — Nhom01-403
+
+## Track: Vinmec
+
+## Problem statement
+Bệnh nhân đến Vinmec không biết nên khám chuyên khoa nào. Hiện tại hỏi lễ tân
+hoặc tổng đài, mất 5-10 phút chờ, lễ tân phải tra danh mục thủ công. AI có thể
+hỏi triệu chứng cơ bản và gợi ý chuyên khoa phù hợp.
+
+## Canvas draft
+
+| | Value | Trust | Feasibility |
+|---|-------|-------|-------------|
+| Trả lời | Bệnh nhân mới, không biết chuyên khoa. Pain: chờ 10 phút, chọn sai khoa = khám lại. AI gợi ý top 3 khoa từ triệu chứng. | Nếu gợi ý sai khoa → bệnh nhân mất thời gian + tiền. Phải có option "gặp lễ tân" luôn hiện. | API call ~$0.005/lượt, latency <3s. Risk: triệu chứng mô tả mơ hồ, nhiều khoa overlap. |
+
+**Auto hay aug?** Augmentation — AI gợi ý, bệnh nhân + lễ tân quyết định cuối cùng.
+
+**Learning signal:** bệnh nhân chọn khoa nào sau gợi ý AI → so sánh với khoa thực tế khám → correction signal.
+
+## Hướng đi chính
+- Prototype: chatbot đơn giản hỏi 3-5 câu triệu chứng → gợi ý top 3 khoa + confidence
+- Eval: precision trên top-3 suggestions ≥ 80%
+- Main failure mode: triệu chứng chung chung ("đau bụng") → gợi ý quá rộng
+
+## Phân công
+- An: Canvas + failure modes
+- Bình: User stories 4 paths
+- Châu: Eval metrics + ROI
+- Dũng: Prototype research + prompt test
