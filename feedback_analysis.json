@@ -4,5 +4,11 @@
     "lesson": "Cung cấp thông tin rõ ràng về quy trình trước khi yêu cầu thông tin cá nhân.",
     "timestamp": "2026-04-09T15:28:27.788571",
     "session_id": "b13087d8-693d-4669-889a-a3f04b680770"
+  },
+  {
+    "root_cause": "Câu trả lời của AI có phần lặp lại thông tin đã được cung cấp trước đó, không mang lại giá trị mới cho người dùng. Ngoài ra, việc yêu cầu thông tin cá nhân để đặt lịch bảo dưỡng có thể khiến người dùng cảm thấy không thoải mái.",
+    "lesson": "Tránh lặp lại thông tin đã có và chỉ yêu cầu thông tin cá nhân khi thực sự cần thiết, đồng thời đảm bảo rằng người dùng cảm thấy thoải mái khi cung cấp thông tin.",
+    "timestamp": "2026-04-09T15:47:05.927658",
+    "session_id": "247a4dea-c7b8-496f-a33e-9c8d23f9d690"
   }
 ]
