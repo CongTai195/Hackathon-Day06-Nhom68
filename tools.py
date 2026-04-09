@@ -389,15 +389,6 @@ def get_charging_policy() -> str:
 
 # ─── RAG Tool ────────────────────────────────────────────────────────────────
 
-@tool
-def search_vinfast_docs(query: str) -> str:
-    """Tìm kiếm thông tin từ tài liệu chính hãng VinFast (Brochure, chính sách, hướng dẫn...).
-    Dùng để tra cứu: Chính sách bảo hành, Quy trình sửa chữa, 
-    Hướng dẫn sử dụng, Trạm sạc V-Green, v.v.
-    Đây là nguồn dữ liệu chính thống cho các thông tin văn bản dài."""
-    return _rag_search(query)
-
-
 # ─── Export ───────────────────────────────────────────────────────────────────
 agent_tools = [
     get_car_specs,
