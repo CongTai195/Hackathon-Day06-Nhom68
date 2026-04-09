@@ -9,6 +9,7 @@ Endpoints:
 
 import uuid
 import os
+import re
 from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -101,12 +102,23 @@ class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = None
 
+_OPTIONS_RE = re.compile(r'\[OPTIONS:\s*(.+?)\]\s*$', re.IGNORECASE | re.DOTALL)
+
+def parse_choices(raw_reply: str) -> tuple[str, list[str]]:
+    match = _OPTIONS_RE.search(raw_reply)
+    if not match:
+        return raw_reply, []
+    options = [o.strip() for o in match.group(1).split('|') if o.strip()]
+    clean = raw_reply[:match.start()].rstrip()
+    return clean, options if len(options) >= 2 else []
+
 class ChatResponse(BaseModel):
     reply: str
     session_id: str
     tool_calls: list[str]
     is_escalation: bool
     is_sos: bool
+    choices: list[str] = []
 
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat(req: ChatRequest):
@@ -139,12 +151,16 @@ async def chat(req: ChatRequest):
 
     is_escalation = "escalate_to_human" in tool_calls_made
 
+    raw_reply = final.content
+    clean_reply, choices = parse_choices(raw_reply)
+
     return ChatResponse(
-        reply=final.content,
+        reply=clean_reply,
         session_id=session_id,
         tool_calls=tool_calls_made,
         is_escalation=is_escalation,
         is_sos=sos_detected,
+        choices=choices,
     )
 
 @app.get("/api/stats")
