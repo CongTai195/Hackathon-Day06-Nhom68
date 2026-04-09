@@ -812,11 +812,11 @@
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 2500);
         // Track in session stats
-        if (window.sessionId) {
+        if (sessionId) {
           fetch('/api/feedback', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ session_id: window.sessionId, msg_id: msgId, score }),
+            body: JSON.stringify({ session_id: sessionId, msg_id: msgId, score }),
           }).catch(() => {}); // fire-and-forget
         }
       }

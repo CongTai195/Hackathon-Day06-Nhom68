@@ -25,6 +25,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage
 from tools import agent_tools, _is_sos
+from feedback_handler import analyze_negative_feedback, get_recent_lessons
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -49,8 +50,11 @@ def agent_node(state: AgentState):
     else:
         context_messages = list(messages)
 
+    lessons_learned = get_recent_lessons()
+    DYNAMIC_PROMPT = SYSTEM_PROMPT + lessons_learned
+
     if not context_messages or getattr(context_messages[0], "type", "") != "system":
-        context_messages = [SystemMessage(content=SYSTEM_PROMPT)] + context_messages
+        context_messages = [SystemMessage(content=DYNAMIC_PROMPT)] + context_messages
 
     last_human = next(
         (m for m in reversed(context_messages) if getattr(m, "type", "") == "human"), None
@@ -179,6 +183,15 @@ async def submit_feedback(req: FeedbackRequest):
         stats["feedback"]["likes"] += 1
     else:
         stats["feedback"]["dislikes"] += 1
+        # Tự động phân tích nguyên nhân khi có Dislike
+        try:
+            config = {"configurable": {"thread_id": req.session_id}}
+            state = graph.get_state(config)
+            history = state.values.get("messages", [])
+            analyze_negative_feedback(history, req.session_id)
+        except Exception as e:
+            print(f"Feedback RCA Error: {e}")
+
     return {"status": "recorded", "msg_id": req.msg_id, "score": req.score}
 
 # Serve static UI
