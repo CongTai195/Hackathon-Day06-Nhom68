@@ -12,8 +12,11 @@ Các tools theo spec-final.md:
 """
 
 import json
+import logging
 from datetime import date
 from langchain_core.tools import tool
+
+logger = logging.getLogger(__name__)
 
 # ─── Cấu hình dữ liệu ────────────────────────────────────────────────────────
 DATA_FILE = "vinfast_cars.json"
@@ -40,8 +43,18 @@ def _load_db():
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
-    except Exception:
-        return []
+    except FileNotFoundError:
+        logger.error("Car database not found: %s", DATA_FILE)
+        raise RuntimeError(
+            "Cơ sở dữ liệu xe hiện không khả dụng. "
+            "Vui lòng liên hệ kỹ thuật viên hoặc hotline 1900 23 23 89."
+        )
+    except json.JSONDecodeError as e:
+        logger.error("Corrupted car database JSON: %s", e)
+        raise RuntimeError(
+            "Dữ liệu xe bị lỗi định dạng. "
+            "Vui lòng liên hệ kỹ thuật viên hoặc hotline 1900 23 23 89."
+        )
 
 def _find_car(model_name: str):
     """Tìm xe trong DB theo tên/model (fuzzy match)."""
