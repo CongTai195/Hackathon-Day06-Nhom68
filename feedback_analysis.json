@@ -10,5 +10,11 @@
     "lesson": "Tránh lặp lại thông tin đã có và chỉ yêu cầu thông tin cá nhân khi thực sự cần thiết, đồng thời đảm bảo rằng người dùng cảm thấy thoải mái khi cung cấp thông tin.",
     "timestamp": "2026-04-09T15:47:05.927658",
     "session_id": "247a4dea-c7b8-496f-a33e-9c8d23f9d690"
+  },
+  {
+    "root_cause": "AI đã ghi sai ngày tháng trong thông tin đặt lịch, cụ thể là ngày 10/04/2026 thay vì 10/04/2023, gây nhầm lẫn cho người dùng.",
+    "lesson": "Kiểm tra và xác nhận lại thông tin ngày tháng trước khi gửi cho người dùng để đảm bảo tính chính xác.",
+    "timestamp": "2026-04-09T17:03:54.750334",
+    "session_id": "f9307cb8-511d-4e39-bc78-f25de33ee05a"
   }
 ]
