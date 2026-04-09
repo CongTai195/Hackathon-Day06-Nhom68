@@ -86,6 +86,7 @@ def get_or_create_session(session_id: str) -> dict:
             "tool_calls_made": [],
             "fallback_count": 0,
             "sos_count": 0,
+            "feedback": {"likes": 0, "dislikes": 0},
         }
     return sessions[session_id]
 
@@ -156,6 +157,7 @@ async def get_stats(session_id: str):
         "fallback_threshold_pct": 20,
         "sos_count": stats.get("sos_count", 0),
         "tool_calls_made": stats.get("tool_calls_made", []),
+        "feedback": stats.get("feedback", {"likes": 0, "dislikes": 0}),
         "status": "🟢 OK" if fallback_rate <= 20 else "🔴 HIGH FALLBACK",
     }
 
@@ -164,6 +166,20 @@ async def reset_session(session_id: str):
     if session_id in sessions:
         del sessions[session_id]
     return {"status": "reset", "new_session_id": str(uuid.uuid4())}
+
+class FeedbackRequest(BaseModel):
+    session_id: str
+    msg_id: str
+    score: int  # 1 = like, 0 = dislike
+
+@app.post("/api/feedback")
+async def submit_feedback(req: FeedbackRequest):
+    stats = get_or_create_session(req.session_id)
+    if req.score == 1:
+        stats["feedback"]["likes"] += 1
+    else:
+        stats["feedback"]["dislikes"] += 1
+    return {"status": "recorded", "msg_id": req.msg_id, "score": req.score}
 
 # Serve static UI
 app.mount("/static", StaticFiles(directory="static"), name="static")

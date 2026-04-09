@@ -12,7 +12,8 @@
     },
     "performance": {
       "max_power_kw": 30,
-      "max_torque_nm": 110
+      "max_torque_nm": 110,
+      "acceleration_0_100_secs": 19.3
     },
     "pricing": {
       "base_price_vnd": 302000000,
@@ -20,6 +21,13 @@
     },
     "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+3+Eco&font=Montserrat",
     "shop_url": "https://shop.vinfastauto.com/vn_vi/dat-coc-xe-dien-vf3.html",
+    "colors": [
+      "Đỏ (Solar Ruby)",
+      "Trắng (Infinity Blanc)",
+      "Xám (Zenith Grey)",
+      "Đen (Jet Black)",
+      "Xanh Lá Nhạt (Urban Mint)"
+    ],
     "status": "Available"
   },
   {
@@ -35,7 +43,8 @@
     },
     "performance": {
       "max_power_kw": 30,
-      "max_torque_nm": 110
+      "max_torque_nm": 110,
+      "acceleration_0_100_secs": 19.3
     },
     "pricing": {
       "base_price_vnd": 315000000,
@@ -43,6 +52,13 @@
     },
     "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+3+Plus&font=Montserrat",
     "shop_url": "https://shop.vinfastauto.com/vn_vi/dat-coc-xe-dien-vf3.html",
+    "colors": [
+      "Đỏ (Solar Ruby)",
+      "Trắng (Infinity Blanc)",
+      "Xám (Zenith Grey)",
+      "Đen (Jet Black)",
+      "Xanh Lá Nhạt (Urban Mint)"
+    ],
     "status": "Available"
   },
   {
@@ -67,6 +83,11 @@
     },
     "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+5+Plus&font=Montserrat",
     "shop_url": "https://shop.vinfastauto.com/vn_vi/dat-coc-xe-dien-vf5.html",
+    "colors": [
+      "Solar Ruby",
+      "Zenith Grey",
+      "Infinity Blanc"
+    ],
     "status": "Available"
   },
   {
@@ -115,6 +136,13 @@
     },
     "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+6+Eco&font=Montserrat",
     "shop_url": "https://shop.vinfastauto.com/vn_vi/dat-coc-xe-dien-vf6.html",
+    "colors": [
+      "Đỏ - Solar Ruby",
+      "Trắng - Infinity Blanc",
+      "Xám - Zenith Grey",
+      "Đen - Jet Black",
+      "Xanh Lá Nhạt - Urban Mint"
+    ],
     "status": "Available"
   },
   {
@@ -139,6 +167,13 @@
     },
     "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+6+Plus&font=Montserrat",
     "shop_url": "https://shop.vinfastauto.com/vn_vi/dat-coc-xe-dien-vf6.html",
+    "colors": [
+      "Đỏ - Solar Ruby",
+      "Trắng - Infinity Blanc",
+      "Xám - Zenith Grey",
+      "Đen - Jet Black",
+      "Xanh Lá Nhạt - Urban Mint"
+    ],
     "status": "Available"
   },
   {
@@ -163,6 +198,13 @@
     },
     "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+7+Eco&font=Montserrat",
     "shop_url": "https://shop.vinfastauto.com/vn_vi/dat-coc-xe-dien-vf7.html",
+    "colors": [
+      "Jet Black",
+      "Infinity Blanc",
+      "Urban Mint",
+      "Solar Ruby",
+      "Zenith Grey"
+    ],
     "status": "Available"
   },
   {
@@ -187,6 +229,13 @@
     },
     "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+7+Plus&font=Montserrat",
     "shop_url": "https://shop.vinfastauto.com/vn_vi/dat-coc-xe-dien-vf7.html",
+    "colors": [
+      "Jet Black",
+      "Infinity Blanc",
+      "Urban Mint",
+      "Solar Ruby",
+      "Zenith Grey"
+    ],
     "status": "Available"
   },
   {
@@ -211,6 +260,13 @@
     },
     "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+7+Plus+Panoramic&font=Montserrat",
     "shop_url": "https://shop.vinfastauto.com/vn_vi/dat-coc-xe-dien-vf7.html",
+    "colors": [
+      "Jet Black",
+      "Infinity Blanc",
+      "Urban Mint",
+      "Solar Ruby",
+      "Zenith Grey"
+    ],
     "status": "Available"
   },
   {
@@ -235,6 +291,14 @@
     },
     "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+8+Eco&font=Montserrat",
     "shop_url": "https://shop.vinfastauto.com/vn_vi/dat-coc-xe-vf8.html",
+    "colors": [
+      "Ivy Green",
+      "Jet Black",
+      "Infinity Blanc",
+      "Crimson Red",
+      "Zenith Grey - Desat Silver Roof",
+      "Infinity Blanc - Zenith Grey Roof"
+    ],
     "status": "Available"
   },
   {
@@ -259,6 +323,14 @@
     },
     "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+8+Plus&font=Montserrat",
     "shop_url": "https://shop.vinfastauto.com/vn_vi/dat-coc-xe-vf8.html",
+    "colors": [
+      "Ivy Green",
+      "Jet Black",
+      "Infinity Blanc",
+      "Crimson Red",
+      "Zenith Grey - Desat Silver Roof",
+      "Infinity Blanc - Zenith Grey Roof"
+    ],
     "status": "Available"
   },
   {
@@ -283,6 +355,16 @@
     },
     "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+9+Eco&font=Montserrat",
     "shop_url": "https://shop.vinfastauto.com/vn_vi/dat-coc-xe-vf9.html",
+    "colors": [
+      "Jet Black",
+      "Infinity Blanc",
+      "Urban Mint",
+      "Solar Ruby",
+      "Zenith Grey",
+      "Desat Silver",
+      "Crimson Red",
+      "Ivy Green"
+    ],
     "status": "Available"
   },
   {
@@ -307,6 +389,16 @@
     },
     "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+9+Plus&font=Montserrat",
     "shop_url": "https://shop.vinfastauto.com/vn_vi/dat-coc-xe-vf9.html",
+    "colors": [
+      "Jet Black",
+      "Infinity Blanc",
+      "Urban Mint",
+      "Solar Ruby",
+      "Zenith Grey",
+      "Desat Silver",
+      "Crimson Red",
+      "Ivy Green"
+    ],
     "status": "Available"
   },
   {

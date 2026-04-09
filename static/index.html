@@ -383,7 +383,49 @@
       color: var(--vf-yellow);
     }
 
-    /* SOS / escalation banner */
+    /* ── Feedback buttons ─────────────────────────────────────────── */
+    .msg-feedback {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .msg-body:hover .msg-feedback {
+      opacity: 1;
+    }
+    .feedback-label {
+      font-size: 0.65rem;
+      color: var(--vf-muted);
+      margin-right: 2px;
+    }
+    .fb-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: var(--vf-muted);
+      transition: all 0.18s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .fb-btn:hover  { background: rgba(255,255,255,0.06); color: #fff; }
+    .fb-btn.liked  { background: rgba(52,211,153,0.15); border-color: rgba(52,211,153,0.4); color: #34d399; }
+    .fb-btn.disliked { background: rgba(255,77,106,0.12); border-color: rgba(255,77,106,0.35); color: #ff4d6a; }
+    .fb-btn:disabled { cursor: default; }
+    .fb-toast {
+      font-size: 0.65rem;
+      color: var(--vf-muted);
+      margin-left: 4px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .fb-toast.show { opacity: 1; }
+
     .escalation-banner {
       display: flex; align-items: center; gap: 10px;
       background: rgba(255,77,106,0.08);
@@ -599,12 +641,7 @@
     </div>
 
     <div style="flex:1">
-      <div class="section-title">🔄 Tool Activity</div>
-      <div class="tool-log scrollbar-thin" id="tool-log">
-        <div style="font-size:0.72rem;color:var(--vf-muted);padding:8px;">
-          Chưa có tool call nào...
-        </div>
-      </div>
+      <!-- Tool log moved to chat bubbles -->
     </div>
   </aside>
 
@@ -742,6 +779,56 @@
       body.appendChild(banner);
     }
 
+    // Like / Dislike feedback (only for bot messages)
+    if (isBot) {
+      const msgId = `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      div.dataset.msgId = msgId;
+
+      const feedback = document.createElement('div');
+      feedback.className = 'msg-feedback';
+      feedback.innerHTML = `
+        <span class="feedback-label">Phản hồi:</span>
+        <button class="fb-btn" id="like-${msgId}" title="Hữu ích">
+          👍 <span class="fb-count">Hữu ích</span>
+        </button>
+        <button class="fb-btn" id="dislike-${msgId}" title="Cần cải thiện">
+          👎 <span class="fb-count">Chưa tốt</span>
+        </button>
+        <span class="fb-toast" id="toast-${msgId}"></span>
+      `;
+      body.appendChild(feedback);
+
+      // Bind click handlers after appending
+      const likeBtn    = feedback.querySelector(`#like-${msgId}`);
+      const dislikeBtn = feedback.querySelector(`#dislike-${msgId}`);
+      const toast      = feedback.querySelector(`#toast-${msgId}`);
+
+      function submitFeedback(score, clickedBtn, otherBtn, toastMsg) {
+        clickedBtn.classList.add(score === 1 ? 'liked' : 'disliked');
+        otherBtn.classList.remove('liked', 'disliked');
+        clickedBtn.disabled = true;
+        otherBtn.disabled   = true;
+        toast.textContent = toastMsg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+        // Track in session stats
+        if (window.sessionId) {
+          fetch('/api/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: window.sessionId, msg_id: msgId, score }),
+          }).catch(() => {}); // fire-and-forget
+        }
+      }
+
+      likeBtn.addEventListener('click', () =>
+        submitFeedback(1, likeBtn, dislikeBtn, '✅ Cảm ơn phản hồi của bạn!')
+      );
+      dislikeBtn.addEventListener('click', () =>
+        submitFeedback(0, dislikeBtn, likeBtn, '📝 Cảm ơn! Chúng tôi sẽ cải thiện.')
+      );
+    }
+
     div.appendChild(avatar);
     div.appendChild(body);
     messagesEl.appendChild(div);
@@ -774,19 +861,7 @@
     if (t) t.remove();
   }
 
-  /* ── Tool log sidebar ───────────────────────────────────────────── */
-  function logTool(toolName) {
-    const first = toolLogEl.querySelector('div[style]');
-    if (first) first.remove();
-
-    totalToolCalls++;
-    const entry = document.createElement('div');
-    const isEsc = toolName === 'escalate_to_human';
-    entry.className = `tool-entry ${isEsc ? 'escalate' : ''}`;
-    entry.innerHTML = `<span class="tool-badge">${toolName}</span><span style="opacity:.5;font-size:0.65rem">${new Date().toLocaleTimeString('vi')}</span>`;
-    toolLogEl.prepend(entry);
-    document.getElementById('st-tools').textContent = totalToolCalls;
-  }
+  /* ── Tool log logic moved to message bubbles ───────────────────── */
 
   /* ── Update stats ───────────────────────────────────────────────── */
   async function updateStats() {
@@ -831,7 +906,7 @@
       hideTyping();
       appendMessage('bot', data.reply, data.tool_calls, data.is_sos);
 
-      data.tool_calls.forEach(tc => logTool(tc));
+      // Tools are shown per-turn in bubbles
       await updateStats();
     } catch (err) {
       hideTyping();
@@ -869,7 +944,6 @@
           <span class="chip">📅 Đặt lịch</span>
         </div>`
     }));
-    toolLogEl.innerHTML = '<div style="font-size:0.72rem;color:var(--vf-muted);padding:8px;">Chưa có tool call nào...</div>';
     ['st-turns','st-tools','st-fallback','st-sos'].forEach(id => {
       const el = document.getElementById(id);
       el.textContent = id === 'st-fallback' ? '0%' : '0';

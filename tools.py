@@ -62,14 +62,18 @@ def _find_car(model_name: str):
 def get_car_specs(model_name: str) -> str:
     """Lấy thông số kỹ thuật chi tiết của một dòng xe VinFast cụ thể.
     Ví dụ: 'VF 5 Plus', 'VF 6 Eco', 'VF 8 Plus', 'VF 9'.
-    Dùng tool này khi khách hỏi về pin, tầm hoạt động, công suất, tăng tốc."""
+    Dùng tool này khi khách hỏi về pin, tầm hoạt động, công suất, tăng tốc, và màu sắc (bảng màu)."""
     car = _find_car(model_name)
     if not car:
         return f"Không tìm thấy thông số kỹ thuật cho dòng xe: '{model_name}'. Các dòng xe hiện có: VF 3, VF 5 Plus, VF e34, VF 6, VF 7, VF 8, VF 9."
 
     perf = car["performance"]
-    accel_key = "acceleration_0_100_secs" if "acceleration_0_100_secs" in perf else "acceleration_0_50_secs"
-    accel_label = "0–100 km/h" if accel_key == "acceleration_0_100_secs" else "0–50 km/h"
+    accel_val = perf.get("acceleration_0_100_secs") or perf.get("acceleration_0_50_secs")
+    accel_label = "0–100 km/h" if "acceleration_0_100_secs" in perf else "0–50 km/h"
+    accel_str = f"{accel_val} giây ({accel_label})" if accel_val else "Đang cập nhật"
+
+    colors = car.get("colors", [])
+    color_str = f"\n• Bảng màu  : {', '.join(colors)}" if colors else ""
 
     return (
         f"📋 Thông số kỹ thuật — {car['name']}\n"
@@ -78,7 +82,8 @@ def get_car_specs(model_name: str) -> str:
         f"• Tầm hoạt  : {car['battery']['range_km']} km (1 lần sạc đầy)\n"
         f"• Sạc nhanh : ~{car['battery']['fast_charge_time_mins']} phút (10→80%)\n"
         f"• Công suất  : {perf['max_power_kw']} kW | Mô-men: {perf['max_torque_nm']} Nm\n"
-        f"• Tăng tốc  : {perf[accel_key]} giây ({accel_label})"
+        f"• Tăng tốc  : {accel_str}"
+        f"{color_str}"
     )
 
 
@@ -176,10 +181,11 @@ def get_shop_url(model_name: str) -> str:
 @tool
 def recommend_cars(budget_million_vnd: int, seats_needed: int = 5, use_case: str = "thành phố") -> str:
     """Gợi ý tối đa 2 dòng xe VinFast phù hợp nhất dựa trên ngân sách và nhu cầu.
-    - budget_million_vnd: ngân sách tính theo triệu VNĐ (VD: 700 = 700 triệu)
-    - seats_needed: số ghế tối thiểu cần (mặc định 5)
-    - use_case: mục đích dùng ('thành phố', 'đường dài', 'gia đình')
-    Đây là tool CHÍNH để tư vấn mua xe — ưu tiên xe có giá sát nhất với ngân sách."""
+    CHỈ GỌI tool này sau khi đã thu thập đủ 3 thông tin qua hội thoại từng bước (Sequential Probing):
+    1. Ngân sách (budget_million_vnd)
+    2. Số chỗ ngồi (seats_needed)
+    3. Nhu cầu sử dụng (use_case)
+    Hãy tóm tắt lại nhu cầu của khách trước khi đưa ra gợi ý."""
     budget_vnd = budget_million_vnd * 1_000_000
 
     # Lọc ban đầu: ưu tiên xe cùng phân khúc giá (từ 50% đến 115% ngân sách)
@@ -316,10 +322,9 @@ def book_service(
     showroom_location: str,
     preferred_date: str,
 ) -> str:
-    """Đặt lịch lái thử xe hoặc lịch bảo dưỡng / sửa chữa tại VinFast Service Center.
-    - service_type: 'lái thử', 'bảo dưỡng định kỳ', 'sửa chữa', hoặc mô tả cụ thể
-    - preferred_date: ngày mong muốn (VD: '12/04/2026' hoặc 'cuối tuần này')
-    Dùng khi khách muốn đặt lịch."""
+    """- preferred_date: ngày mong muốn (VD: '12/04/2026' hoặc 'cuối tuần này')
+    CHỈ ĐƯỢC GỌI sau khi đã thu thập đủ 5 thông tin thông qua hội thoại từng bước (Sequential Collection). 
+    Phải tóm tắt lại thông tin cho khách xác nhận trước khi gọi tool này."""
     today = date.today().strftime("%d/%m/%Y")
     return (
         f"✅ Đặt lịch thành công!\n"
@@ -367,6 +372,17 @@ def get_charging_policy() -> str:
         "Ngoài định mức miễn phí, phí sạc sẽ được tính theo biểu giá hiện hành của V-Green."
         + _PRICE_DISCLAIMER
     )
+
+
+# ─── RAG Tool ────────────────────────────────────────────────────────────────
+
+@tool
+def search_vinfast_docs(query: str) -> str:
+    """Tìm kiếm thông tin từ tài liệu chính hãng VinFast (Brochure, chính sách, hướng dẫn...).
+    Dùng để tra cứu: Chính sách bảo hành, Quy trình sửa chữa, 
+    Hướng dẫn sử dụng, Trạm sạc V-Green, v.v.
+    Đây là nguồn dữ liệu chính thống cho các thông tin văn bản dài."""
+    return _rag_search(query)
 
 
 # ─── Export ───────────────────────────────────────────────────────────────────
