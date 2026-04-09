@@ -117,7 +117,7 @@
   {
     "id": "vf-7-base",
     "model": "VF 7",
-    "name": "VinFast VF 7 Base",
+    "name": "VinFast VF 7S",
     "segment": "C-SUV",
     "capacity": 5,
     "battery": {
@@ -131,10 +131,10 @@
       "acceleration_0_100_secs": 10.0
     },
     "pricing": {
-      "base_price_vnd": 850000000,
-      "battery_included_price_vnd": 999000000
+      "base_price_vnd": 789000000,
+      "battery_included_price_vnd": 938000000
     },
-    "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+7+Base&font=Montserrat",
+    "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+7S&font=Montserrat",
     "status": "Available"
   },
   {
@@ -154,8 +154,8 @@
       "acceleration_0_100_secs": 5.8
     },
     "pricing": {
-      "base_price_vnd": 999000000,
-      "battery_included_price_vnd": 1199000000
+      "base_price_vnd": 889000000,
+      "battery_included_price_vnd": 1089000000
     },
     "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+7+Plus&font=Montserrat",
     "status": "Available"
@@ -250,6 +250,98 @@
       "battery_included_price_vnd": 2169000000
     },
     "image_url": "https://placehold.co/800x400/1e3a8a/FFFFFF/png?text=VinFast+VF+9+Plus&font=Montserrat",
+    "status": "Available"
+  },
+  {
+    "id": "minio-green",
+    "model": "Minio",
+    "name": "VinFast Minio Green",
+    "segment": "Mini-SUV",
+    "capacity": 2,
+    "battery": {
+      "capacity_kwh": 14.7,
+      "range_km": 150,
+      "fast_charge_time_mins": 30
+    },
+    "performance": {
+      "max_power_kw": 20,
+      "max_torque_nm": 65,
+      "acceleration_0_100_secs": 15.0
+    },
+    "pricing": {
+      "base_price_vnd": 269000000,
+      "battery_included_price_vnd": 344000000
+    },
+    "image_url": "https://placehold.co/800x400/00E5A0/FFFFFF/png?text=Minio+Green&font=Montserrat",
+    "status": "Available"
+  },
+  {
+    "id": "herio-green",
+    "model": "Herio",
+    "name": "VinFast Herio Green",
+    "segment": "A-SUV",
+    "capacity": 5,
+    "battery": {
+      "capacity_kwh": 37.23,
+      "range_km": 326,
+      "fast_charge_time_mins": 30
+    },
+    "performance": {
+      "max_power_kw": 100,
+      "max_torque_nm": 135,
+      "acceleration_0_100_secs": 10.9
+    },
+    "pricing": {
+      "base_price_vnd": 499000000,
+      "battery_included_price_vnd": 579000000
+    },
+    "image_url": "https://placehold.co/800x400/00E5A0/FFFFFF/png?text=Herio+Green&font=Montserrat",
+    "status": "Available"
+  },
+  {
+    "id": "nerio-green",
+    "model": "Nerio",
+    "name": "VinFast Nerio Green",
+    "segment": "C-SUV",
+    "capacity": 5,
+    "battery": {
+      "capacity_kwh": 42.0,
+      "range_km": 318,
+      "fast_charge_time_mins": 27
+    },
+    "performance": {
+      "max_power_kw": 110,
+      "max_torque_nm": 242,
+      "acceleration_0_100_secs": 9.4
+    },
+    "pricing": {
+      "base_price_vnd": 668000000,
+      "battery_included_price_vnd": 818000000
+    },
+    "image_url": "https://placehold.co/800x400/00E5A0/FFFFFF/png?text=Nerio+Green&font=Montserrat",
+    "status": "Available"
+  },
+  {
+    "id": "limo-green",
+    "model": "Limo",
+    "name": "VinFast Limo Green",
+    "segment": "D-SUV",
+    "capacity": 7,
+    "battery": {
+      "capacity_kwh": 60.1,
+      "range_km": 450,
+      "fast_charge_time_mins": 26
+    },
+    "performance": {
+      "max_power_kw": 150,
+      "max_torque_nm": 280,
+      "acceleration_0_100_secs": 8.5
+    },
+    "pricing": {
+      "base_price_vnd": 749000000,
+      "battery_included_price_vnd": 949000000
+    },
+    "image_url": "https://placehold.co/800x400/00E5A0/FFFFFF/png?text=Limo+Green&font=Montserrat",
     "status": "Available"
   }
 ]
