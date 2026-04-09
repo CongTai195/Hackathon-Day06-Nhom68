@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/png" href="/static/vinfast_v_emblem.png" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     /* ── Design Tokens ─────────────────────────────────────────── */
     :root {
@@ -491,6 +492,42 @@
       .messages { padding: 16px; }
       .input-area { padding: 12px 16px 16px; }
     }
+    /* ── Markdown Tables ────────────────────────────────────────── */
+    .msg-bubble table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 12px 0;
+      font-size: 0.82rem;
+      border: 1px solid var(--vf-border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: rgba(255,255,255,0.02);
+    }
+    .msg-bubble th {
+      background: linear-gradient(90deg, var(--vf-blue), var(--vf-cyan));
+      color: white;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+    }
+    .msg-bubble td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(0,212,255,0.05);
+      color: var(--vf-text);
+    }
+    .msg-bubble tr:last-child td { border-bottom: none; }
+    .msg-bubble tr:hover td { background: rgba(0,212,255,0.04); }
+    .msg-bubble blockquote {
+      border-left: 3px solid var(--vf-cyan);
+      padding-left: 12px;
+      margin: 10px 0;
+      opacity: 0.85;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -515,22 +552,22 @@
       <div class="section-title">💬 Quick Prompts</div>
       <div class="quick-prompts">
         <button class="qp-btn" onclick="sendQuick('Tôi có ngân sách 700 triệu, muốn mua xe 5 chỗ đi thành phố. Nên mua xe nào?')">
-          <span class="qp-icon">🎯</span>Gợi ý xe theo ngân sách
+          <span class="qp-icon">🎯</span>Tôi có ngân sách 700 triệu, muốn mua xe 5 chỗ đi thành phố. Nên mua xe nào?
         </button>
-        <button class="qp-btn" onclick="sendQuick('So sánh VF 5 Plus và VF 6 Eco cho tôi')">
-          <span class="qp-icon">⚖️</span>So sánh 2 dòng xe
+        <button class="qp-btn" onclick="sendQuick('So sánh VF 6 và VF 7 cho tôi')">
+          <span class="qp-icon">⚖️</span>So sánh VF 6 và VF 7 cho tôi
         </button>
-        <button class="qp-btn" onclick="sendQuick('Chính sách thuê pin của VinFast là gì? Có nên thuê hay mua đứt?')">
-          <span class="qp-icon">🔋</span>Chính sách thuê pin
+        <button class="qp-btn" onclick="sendQuick('Chính sách pin của VinFast hiện tại như thế nào?')">
+          <span class="qp-icon">🔋</span>Chính sách pin của VinFast hiện tại như thế nào?
         </button>
         <button class="qp-btn" onclick="sendQuick('Xe VF 6 của tôi đi được 15.000 km rồi, cần bảo dưỡng những gì?')">
-          <span class="qp-icon">🔧</span>Lịch bảo dưỡng định kỳ
+          <span class="qp-icon">🔧</span>Xe VF 6 của tôi đi được 15.000 km rồi, cần bảo dưỡng những gì?
         </button>
-        <button class="qp-btn" onclick="sendQuick('Tôi muốn đặt lịch lái thử VF 5 Plus tại Hà Nội cuối tuần này')">
-          <span class="qp-icon">📅</span>Đặt lịch lái thử
+        <button class="qp-btn" onclick="sendQuick('Tôi muốn đặt lịch lái thử VF 7 tại Hà Nội cuối tuần này')">
+          <span class="qp-icon">📅</span>Tôi muốn đặt lịch lái thử VF 7 tại Hà Nội cuối tuần này
         </button>
-        <button class="qp-btn" onclick="sendQuick('Giá xe VF 9 hiện tại là bao nhiêu?')">
-          <span class="qp-icon">💰</span>Hỏi giá xe
+        <button class="qp-btn" onclick="sendQuick('Báo giá lăn bánh xe VF 9 cho tôi')">
+          <span class="qp-icon">💰</span>Báo giá lăn bánh xe VF 9 cho tôi
         </button>
       </div>
     </div>
@@ -630,27 +667,31 @@
     }
   });
 
-  /* ── Markdown → HTML (minimal) ──────────────────────────────────── */
+  /* ── Markdown → HTML (Using marked.js) ─────────────────────────── */
+  const renderer = new marked.Renderer();
+  const linkRenderer = renderer.link;
+  renderer.link = (href, title, text) => {
+    const html = linkRenderer.call(renderer, href, title, text);
+    return html.replace(/^<a /, '<a target="_blank" rel="noopener noreferrer" ');
+  };
+
+  marked.setOptions({
+    renderer: renderer,
+    breaks: true,
+    gfm: true
+  });
+
   function md(text) {
+    if (!text) return '';
+    // Ensure marked is available
+    if (typeof marked !== 'undefined') {
+      return marked.parse(text);
+    }
+    
+    // Fallback if CDN fails
     return text
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      // Bold
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      // Italic
-      .replace(/_(.+?)_/g, '<em>$1</em>')
-      // Code
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-      // Bullet lists
-      .replace(/^[•·\-*]\s+(.+)$/gm, '<li>$1</li>')
-      .replace(/(<li>.*<\/li>\n?)+/g, s => '<ul>' + s + '</ul>')
-      // Numbered lists
-      .replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>')
-      // Emoji heading lines (lines starting with emoji + bold)
-      .replace(/^([\u{1F000}-\u{1FFFF}⚡🔋🚗🔧📅💰⚠️✅🎧📌1️⃣2️⃣📋⚖️][^\n]*)$/gmu, '<p>$1</p>')
-      // Line breaks
-      .replace(/\n\n/g, '</p><p>')
-      .replace(/\n/g, '<br>')
-      .replace(/^(?!<[upo])(.+)$/gm, (m) => m.startsWith('<') ? m : `<p>${m}</p>`);
+      .replace(/\n/g, '<br>');
   }
 
   /* ── Append message ─────────────────────────────────────────────── */

@@ -15,40 +15,39 @@ import json
 from datetime import date
 from langchain_core.tools import tool
 
-# ─── Load dữ liệu xe ─────────────────────────────────────────────────────────
+# ─── Cấu hình dữ liệu ────────────────────────────────────────────────────────
 DATA_FILE = "vinfast_cars.json"
-DATA_UPDATED_DATE = "2026-04-09"  # Cập nhật mỗi khi refresh file JSON
+DATA_UPDATED_DATE = "2026-04-09"
 
-try:
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        CARS_DB = json.load(f)
-except FileNotFoundError:
-    CARS_DB = []
-
-# ─── Disclaimer bắt buộc theo spec (Failure Mode #1: data stale) ─────────────
 _PRICE_DISCLAIMER = (
     f"\n\n⚠️ *Thông tin giá & chính sách tham khảo tại ngày {DATA_UPDATED_DATE}. "
     "Vui lòng xác nhận tại đại lý VinFast gần nhất hoặc gọi hotline 1900 23 23 89 "
     "để có báo giá chính xác nhất.*"
 )
 
-# ─── SOS keywords (Failure Mode #2) ──────────────────────────────────────────
 SOS_KEYWORDS = [
     "hỏng đường", "tai nạn", "phanh", "không phanh", "mất lái", "khẩn cấp",
     "xe chết", "xe không khởi động", "cháy xe", "kẹt cửa", "sos",
     "cứu", "nguy hiểm", "lỗi ota", "lỗi phần cứng",
 ]
 
-
 def _is_sos(text: str) -> bool:
     t = text.lower()
     return any(kw in t for kw in SOS_KEYWORDS)
 
+def _load_db():
+    """Tải dữ liệu xe mới nhất từ file JSON."""
+    try:
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return []
 
 def _find_car(model_name: str):
     """Tìm xe trong DB theo tên/model (fuzzy match)."""
+    db = _load_db()
     q = model_name.lower().replace(" ", "").replace("-", "")
-    for car in CARS_DB:
+    for car in db:
         name_norm = car["name"].lower().replace(" ", "").replace("-", "")
         id_norm = car["id"].lower().replace("-", "")
         model_norm = car["model"].lower().replace(" ", "").replace("-", "")
@@ -85,23 +84,92 @@ def get_car_specs(model_name: str) -> str:
 
 @tool
 def get_pricing_and_battery_policy(model_name: str) -> str:
-    """Lấy giá bán và chính sách thuê pin / mua đứt pin của một dòng xe VinFast cụ thể.
-    Luôn kèm disclaimer về tính thời điểm của giá. Dùng khi khách hỏi giá xe."""
+    """Lấy bảng giá chi tiết kèm ưu đãi của một dòng xe VinFast.
+    Bao gồm: Giá công bố, Khuyến mãi VinFast, Bảo hiểm và Ưu đãi đại lý.
+    Dùng khi khách hỏi giá xe."""
     car = _find_car(model_name)
     if not car:
         return f"Không tìm thấy thông tin giá cho dòng xe: '{model_name}'."
 
-    base = car["pricing"]["base_price_vnd"]
-    full = car["pricing"]["battery_included_price_vnd"]
-    monthly_lease = base * 0.0025  # ước tính ~0.25%/tháng giá xe
+    full_price = car["pricing"]["battery_included_price_vnd"]
+    
+    # Logic tính toán ưu đãi (Tháng 4/2026)
+    promo_vf_percent = 6 # Khuyến mãi chung 6%
+    promo_vf_amount = full_price * (promo_vf_percent / 100)
+    insurance_2yr = 0 # Quy đổi bảo hiểm 2 năm, được tặng
+    dealer_promo = 4_000_000 # Ưu đãi đại lý mặc định
+    total_savings = promo_vf_amount + insurance_2yr + dealer_promo
+    final_estimated = full_price - total_savings
+    
+    # Chi phí đăng ký & Lăn bánh (Tháng 4/2026)
+    reg_fees = {
+        "Thuế trước bạ (đến 28/02/2027)": 0,
+        "Lệ phí biển số": 200_000,
+        "Phí đăng kiểm": 140_000,
+        "Phí bảo trì đường bộ (1 năm)": 1_560_000,
+        "Dịch vụ đăng ký xe": 0, # Tặng
+        "Bảo hiểm TNDS": 480_700
+    }
+    total_reg_fees = sum(reg_fees.values())
+    final_on_road = final_estimated + total_reg_fees
 
     return (
-        f"💰 Giá bán — {car['name']}\n"
-        f"• Thuê pin (trả góp pin hàng tháng): {base:,.0f} VNĐ\n"
-        f"  → Phí thuê pin ước tính: ~{monthly_lease:,.0f} VNĐ/tháng\n"
-        f"• Mua đứt pin (sở hữu hoàn toàn) : {full:,.0f} VNĐ\n"
-        f"• Chênh lệch mua đứt vs thuê pin  : {full - base:,.0f} VNĐ"
+        f"📊 **BẢNG TÍNH GIÁ XE & ƯU ĐÃI — {car['name'].upper()}**\n\n"
+        f"| Hạng mục | Chi tiết | Giá trị (VNĐ) |\n"
+        f"| :--- | :--- | :---: |\n"
+        f"| **1. Giá xe công bố** | Niêm yết (kèm pin) | {full_price:,.0f} |\n"
+        f"| **2. Khuyến mãi VinFast** | Ưu đãi 6% giá xe | -{promo_vf_amount:,.0f} |\n"
+        f"| **3. Bảo hiểm quy đổi** | Gói bảo hiểm vật chất 2 năm | {insurance_2yr:,.0f} |\n"
+        f"| **4. Khuyến mãi đại lý** | Ưu đãi thêm tại showroom | -{dealer_promo:,.0f} |\n"
+        f"| --- | --- | --- |\n"
+        f"| 💰 **GIÁ ƯU ĐÃI TẾ** | **Tổng sau khuyến mãi** | **{final_estimated:,.0f}** |\n"
+        f"| --- | --- | --- |\n"
+        f"| **5. Thuế trước bạ** | Ưu đãi 0% (đến 28/02/2027) | 0 |\n"
+        f"| **6. Lệ phí biển số** | Cấp mới biển số | 200,000 |\n"
+        f"| **7. Phí đăng kiểm** | Kiểm định kỹ thuật | 140,000 |\n"
+        f"| **8. Phí đường bộ** | Gói 1 năm (Cá nhân) | 1,560,000 |\n"
+        f"| **9. Bảo hiểm TNDS** | Bảo hiểm bắt buộc | 480,700 |\n"
+        f"| --- | --- | --- |\n"
+        f"| 🚀 **GIÁ LĂN BÁNH TẠM TÍNH** | **Tổng chi phí sở hữu** | **{final_on_road:,.0f}** |\n\n"
+        f"*(Giá lăn bánh đã bao gồm ưu đãi thuế trước bạ 0% áp dụng đến hết 28/02/2027)*\n"
         + _PRICE_DISCLAIMER
+    )
+
+
+
+@tool
+def get_registration_fees(model_name: str) -> str:
+    """Trả lời chi tiết về các loại phí đăng ký xe (phí lăn bánh) tại Việt Nam.
+    Bao gồm Thuế trước bạ, Biển số, Đăng kiểm, Bảo trì đường bộ, Bảo hiểm TNDS."""
+    return (
+        f"📋 **BẢNG CHI TIẾT PHÍ ĐĂNG KÝ XE ĐIỆN — {model_name.upper()}**\n\n"
+        f"| Hạng mục | Chi tiết | Giá trị (VNĐ) |\n"
+        f"| :--- | :--- | :---: |\n"
+        f"| **1. Thuế trước bạ** | Ưu đãi 0% (đến 28/02/2027) | 0 |\n"
+        f"| **2. Lệ phí biển số** | Cấp mới biển số | 200,000 |\n"
+        f"| **3. Phí đăng kiểm** | Kiểm định kỹ thuật | 140,000 |\n"
+        f"| **4. Phí bảo trì đường bộ** | Gói 1 năm (Cá nhân) | 1,560,000 |\n"
+        f"| **5. Dịch vụ đăng ký** | Phí dịch vụ phía đại lý | Tặng |\n"
+        f"| **6. Bảo hiểm TNDS** | Bảo hiểm bắt buộc | 480,700 |\n"
+        f"| --- | --- | --- |\n"
+        f"| 📝 **TỔNG CỘNG PHÍ** | **Phí đăng ký tạm tính** | **2,380,700** |\n\n"
+        f"*Lưu ý: Bảng tính này áp dụng cho xe cá nhân đăng ký mới tại Việt Nam.*"
+    )
+
+
+@tool
+def get_shop_url(model_name: str) -> str:
+    """Lấy đường dẫn VinFast Shop để khách hàng xem thêm hình ảnh, thông tin chi tiết hoặc đặt cọc.
+    Dùng tool này KHI VÀ CHỈ KHI khách hàng muốn xem thêm ảnh/thông tin hoặc đã xác nhận muốn xem link."""
+    car = _find_car(model_name)
+    if not car or "shop_url" not in car:
+        return f"Hiện chưa có đường dẫn trực tiếp cho dòng xe: '{model_name}'. Quý khách có thể truy cập https://shop.vinfastauto.com/vn_vi/o-to-dien-vinfast.html để xem tất cả dòng xe."
+
+    return (
+        f"🔗 **ĐƯỜNG DẪN ĐẶT CỌC TRỰC TUYẾN — {car['name'].upper()}**\n"
+        f"Quý khách có thể tiến hành đặt cọc và chọn cấu hình xe tại đây:\n"
+        f"{car['shop_url']}\n\n"
+        f"*Chúc quý khách sớm sở hữu chiếc xe ưng ý!*"
     )
 
 
@@ -116,16 +184,17 @@ def recommend_cars(budget_million_vnd: int, seats_needed: int = 5, use_case: str
 
     # Lọc ban đầu: ưu tiên xe cùng phân khúc giá (từ 50% đến 115% ngân sách)
     # Chúng ta cho phép vượt 15% để khách có thêm lựa chọn tốt hơn một chút
+    db = _load_db()
     candidates = [
-        c for c in CARS_DB
-        if c["pricing"]["base_price_vnd"] <= budget_vnd * 1.15
+        c for c in db
+        if c["pricing"]["battery_included_price_vnd"] <= budget_vnd * 1.15
         and c["capacity"] >= seats_needed
     ]
 
     # Nếu không có xe nào trong tầm giá sát, nới lỏng xuống các xe rẻ hơn (Mini-SUV)
     if not candidates:
         candidates = [
-            c for c in CARS_DB
+            c for c in db
             if c["capacity"] >= seats_needed
         ]
         if not candidates:
@@ -138,22 +207,22 @@ def recommend_cars(budget_million_vnd: int, seats_needed: int = 5, use_case: str
     if "dài" in use_case.lower():
         # Đường dài: Ưu tiên Range, nhưng vẫn phải quan tâm đến Budget
         # Chọn top 5 xe gần budget nhất rồi sort theo range
-        candidates.sort(key=lambda c: abs(c["pricing"]["base_price_vnd"] - budget_vnd))
+        candidates.sort(key=lambda c: abs(c["pricing"]["battery_included_price_vnd"] - budget_vnd))
         near_budget = candidates[:5]
         near_budget.sort(key=lambda c: -c["battery"]["range_km"])
         top = near_budget[:2]
     else:
         # Bình thường: Ưu tiên xe có giá sát ngân sách khách đưa ra nhất
-        candidates.sort(key=lambda c: abs(c["pricing"]["base_price_vnd"] - budget_vnd))
+        candidates.sort(key=lambda c: abs(c["pricing"]["battery_included_price_vnd"] - budget_vnd))
         top = candidates[:2]
 
     lines = [f"🚗 Dựa trên ngân sách {budget_million_vnd} triệu | {seats_needed} chỗ | {use_case}:\n"]
 
     for i, car in enumerate(top, 1):
-        price = car["pricing"]["base_price_vnd"]
+        full_price = car["pricing"]["battery_included_price_vnd"]
         lines.append(
             f"  {i}. {car['name']} ({car['segment']})\n"
-            f"     • Giá thuê pin: {price:,.0f} VNĐ\n"
+            f"     • Giá kèm pin: {full_price:,.0f} VNĐ\n"
             f"     • Tầm hoạt động: {car['battery']['range_km']} km\n"
             f"     • Tăng tốc: {car['performance'].get('acceleration_0_100_secs', car['performance'].get('acceleration_0_50_secs', '?'))}s"
         )
@@ -183,27 +252,24 @@ def compare_vinfast_cars(model_1: str, model_2: str) -> str:
         f"{'Số chỗ':<22} {str(car1['capacity']) + ' chỗ':<24} {str(car2['capacity'])} chỗ\n"
         f"{'Tầm hoạt động':<22} {str(car1['battery']['range_km']) + ' km':<24} {str(car2['battery']['range_km'])} km\n"
         f"{'Pin':<22} {str(car1['battery']['capacity_kwh']) + ' kWh':<24} {str(car2['battery']['capacity_kwh'])} kWh\n"
-        f"{'Giá thuê pin':<22} {car1['pricing']['base_price_vnd']:>18,.0f} đ  {car2['pricing']['base_price_vnd']:>18,.0f} đ\n"
-        f"{'Giá mua đứt pin':<22} {car1['pricing']['battery_included_price_vnd']:>18,.0f} đ  {car2['pricing']['battery_included_price_vnd']:>18,.0f} đ"
+        f"{'Giá bán (kèm pin)':<22} {car1['pricing']['battery_included_price_vnd']:>18,.0f} đ  {car2['pricing']['battery_included_price_vnd']:>18,.0f} đ"
         + _PRICE_DISCLAIMER
     )
 
 
 @tool
 def get_battery_lease_policy() -> str:
-    """Giải thích chính sách thuê pin VinFast (battery-as-a-service).
-    Dùng khi khách hỏi riêng về thuê pin, mua đứt pin, hay chính sách pin là gì."""
+    """Giải thích chính sách Pin VinFast mới nhất (2026).
+    Dùng khi khách hỏi về chính sách bảo hành pin, sạc pin hoặc giá pin."""
     return (
-        "🔋 Chính sách Pin VinFast (Battery-as-a-Service)\n\n"
-        "VinFast cung cấp 2 lựa chọn:\n"
-        "1️⃣  Thuê pin (BaaS): Mua xe với giá thấp hơn + trả phí thuê pin hàng tháng.\n"
-        "   • Phí thuê dao động ~750.000 – 1.500.000 VNĐ/tháng tuỳ dòng xe & gói km.\n"
-        "   • VinFast bảo hành pin trọn đời (SOH ≥ 70%) khi thuê.\n"
-        "   • Nếu pin hỏng/xuống cấp: VinFast thay pin miễn phí.\n\n"
-        "2️⃣  Mua đứt pin: Sở hữu pin hoàn toàn, giá mua cao hơn nhưng không tốn phí thuê tháng.\n"
-        "   • Bảo hành pin 8 năm hoặc 160.000 km (tuỳ điều kiện nào đến trước).\n\n"
-        "📌 Lợi thế thuê pin: chi phí trả trước thấp hơn, không lo pin cũ mất giá.\n"
-        "📌 Lợi thế mua đứt: tổng chi phí dài hạn thấp hơn nếu giữ xe > 5 năm."
+        "🔋 **Chính sách Pin VinFast — Tiêu chuẩn Hiện hành (2026)**\n\n"
+        "Từ năm 2026, VinFast áp dụng chính sách **Mua xe kèm Pin** làm tiêu chuẩn duy nhất cho các dòng xe điện thế hệ mới, "
+        "nhằm đơn giản hóa quy trình sở hữu và tối ưu chi phí cho khách hàng.\n\n"
+        "1️⃣  **Quyền sở hữu**: Khách hàng sở hữu hoàn toàn bộ pin theo xe, không phát sinh chi phí thuê hàng tháng.\n"
+        "2️⃣  **Bảo hành tiêu chuẩn**: Pin được bảo hành chính hãng từ 8-10 năm hoặc 160.000 - 200.000 km (tùy dòng xe).\n"
+        "3️⃣  **Cam kết chất lượng**: VinFast cam kết hiệu suất pin ổn định, hỗ trợ sửa chữa/thay thế tại hệ thống xưởng dịch vụ toàn quốc.\n"
+        "4️⃣  **Cứu hộ pin 24/7**: Hỗ trợ sạc khẩn cấp hoặc cứu hộ xe về trạm sạc gần nhất nếu gặp sự cố cạn pin trên đường.\n\n"
+        "📌 Với chính sách này, tổng giá trị sở hữu xe (TCO) trong dài hạn được tối ưu hóa rõ rệt so với các mô hình trước đây."
         + _PRICE_DISCLAIMER
     )
 
@@ -308,6 +374,8 @@ agent_tools = [
     get_car_specs,
     get_pricing_and_battery_policy,
     get_charging_policy,
+    get_registration_fees,
+    get_shop_url,
     recommend_cars,
     compare_vinfast_cars,
     get_battery_lease_policy,
