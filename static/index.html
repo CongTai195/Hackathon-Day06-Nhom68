@@ -563,6 +563,45 @@
     }
     .msg-bubble tr:last-child td { border-bottom: none; }
     .msg-bubble tr:hover td { background: rgba(0,212,255,0.04); }
+    /* ── Choice Chips ─────────────────────────────────────────── */
+    .choice-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .choice-chip {
+      background: transparent;
+      border: 1.5px solid var(--vf-cyan);
+      border-radius: 20px;
+      padding: 7px 16px;
+      font-size: 0.8rem;
+      font-family: 'Inter', sans-serif;
+      color: var(--vf-cyan);
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, transform 0.12s, opacity 0.18s;
+      white-space: nowrap;
+    }
+    .choice-chip:hover:not(:disabled) {
+      background: rgba(0, 212, 255, 0.12);
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
+    }
+    .choice-chip:active:not(:disabled) { transform: translateY(0); }
+    .choice-chip:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      border-color: var(--vf-muted);
+      color: var(--vf-muted);
+    }
+    .choice-chip.selected {
+      background: linear-gradient(135deg, var(--vf-blue), rgba(0, 212, 255, 0.3));
+      border-color: var(--vf-cyan);
+      color: #fff;
+      opacity: 1;
+    }
+
     .msg-bubble blockquote {
       border-left: 3px solid var(--vf-cyan);
       padding-left: 12px;
@@ -736,7 +775,7 @@
   }
 
   /* ── Append message ─────────────────────────────────────────────── */
-  function appendMessage(role, content, toolCalls = [], isSos = false) {
+  function appendMessage(role, content, toolCalls = [], isSos = false, choices = []) {
     if (welcomeEl) welcomeEl.style.display = 'none';
 
     const div = document.createElement('div');
@@ -833,6 +872,24 @@
       );
     }
 
+    // Choice chips (bot messages only)
+    if (isBot && choices.length > 0) {
+      const chipsDiv = document.createElement('div');
+      chipsDiv.className = 'choice-chips';
+      choices.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-chip';
+        btn.textContent = opt;
+        btn.addEventListener('click', () => {
+          btn.classList.add('selected');
+          chipsDiv.querySelectorAll('.choice-chip').forEach(c => c.disabled = true);
+          sendQuick(opt);
+        });
+        chipsDiv.appendChild(btn);
+      });
+      body.appendChild(chipsDiv);
+    }
+
     div.appendChild(avatar);
     div.appendChild(body);
     messagesEl.appendChild(div);
@@ -893,6 +950,9 @@
     inputEl.value = '';
     inputEl.style.height = 'auto';
 
+    // Disable any pending choice chips (user typed instead of clicking)
+    document.querySelectorAll('.choice-chip:not(:disabled)').forEach(c => c.disabled = true);
+
     appendMessage('user', text);
     showTyping();
 
@@ -908,7 +968,7 @@
 
       sessionId = data.session_id;
       hideTyping();
-      appendMessage('bot', data.reply, data.tool_calls, data.is_sos);
+      appendMessage('bot', data.reply, data.tool_calls, data.is_sos, data.choices || []);
 
       // Tools are shown per-turn in bubbles
       await updateStats();
